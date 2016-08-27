@@ -63,6 +63,8 @@ public class JdkHttpServer implements SimpleHttpServer {
 		lock.lock();
 		if (status != STATUS_READY) {
 			log.severe("*^* 服务已经在运行中或停止");
+			lock.unlock();
+			return;
 		}
 		try {
 			server = HttpServer.create(new InetSocketAddress(port), maxProcess);
@@ -101,6 +103,14 @@ public class JdkHttpServer implements SimpleHttpServer {
 	public boolean isActive() {
 		return status == STATUS_RUNNING;
 	}
+	
+	@Override
+	public String getHost() {
+		if (server == null || server.getAddress() == null) {
+			log.info("*^* 服务未完成初始化");
+		}
+		return server.getAddress().getHostString();
+	}
 
 	@Override
 	public int getPort() {
@@ -109,9 +119,14 @@ public class JdkHttpServer implements SimpleHttpServer {
 
 	@Override
 	public void setPort(int port) {
+		lock.lock();
+		if (status != STATUS_READY) {
+			log.severe("*^* 服务已经在运行中或停止");
+		}
 		if (port >= 0 && port <= 65535) {
 			this.port = port;
 		}
+		lock.unlock();
 	}
 	
 	public int getMaxProcess() {
@@ -119,7 +134,12 @@ public class JdkHttpServer implements SimpleHttpServer {
 	}
 	
 	public void setMaxProcess(int maxProcess) {
+		lock.lock();
+		if (status != STATUS_READY) {
+			log.severe("*^* 服务已经在运行中或停止");
+		}
 		this.maxProcess = maxProcess < 10 ? 10 : maxProcess;
+		lock.unlock();
 	}
 
 	@Override

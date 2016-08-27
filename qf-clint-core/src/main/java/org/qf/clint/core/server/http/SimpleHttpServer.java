@@ -37,6 +37,13 @@ public interface SimpleHttpServer {
 	public boolean isActive();
 	
 	/**
+	 * 获取服务地址
+	 * 
+	 * @return
+	 */
+	public abstract String getHost();
+	
+	/**
 	 * 获取端口
 	 * 
 	 * @return int
