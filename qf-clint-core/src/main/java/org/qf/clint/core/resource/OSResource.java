@@ -9,7 +9,6 @@ import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
 import java.util.logging.Logger;
 
-import org.qf.clint.core.mbean.OSResourceMBean;
 import org.qf.clint.core.util.ByteUtil;
 
 import com.sun.management.OperatingSystemMXBean;

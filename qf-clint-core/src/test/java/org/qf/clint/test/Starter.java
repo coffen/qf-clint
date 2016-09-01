@@ -1,7 +1,6 @@
 package org.qf.clint.test;
 
 import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
@@ -10,6 +9,8 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
 import org.qf.clint.core.agent.HttpAgent;
+import org.qf.clint.core.resource.OSResource;
+import org.qf.clint.core.resource.OSResourceMBean;
 import org.qf.clint.core.server.http.SimpleHttpServer;
 import org.qf.clint.core.server.http.impl.JdkHttpServer;
 
@@ -38,35 +39,18 @@ public class Starter {
 		server.bind(new TestAction());
 		HttpAgent agent = new HttpAgent(server);
 		
-		MBeanServer mbs1 = MBeanServerFactory.createMBeanServer("A");
-		MBeanServer mbs2 = MBeanServerFactory.createMBeanServer("B");
+		MBeanServer commonMbs = MBeanServerFactory.createMBeanServer("common");
+		OSResourceMBean os = OSResource.getInstance();
 		
 		try {
-			mbs1.registerMBean(agent, new ObjectName(mbs1.getDefaultDomain() + ":name=htmlagent,port=" + agent.getPort()));
-			mbs2.registerMBean(agent, new ObjectName(mbs2.getDefaultDomain() + ":name=htmlagent,port=" + agent.getPort()));
+			commonMbs.registerMBean(os, new ObjectName(commonMbs.getDefaultDomain() + ":type=OSResourceMBean"));
+			commonMbs.registerMBean(agent, new ObjectName(commonMbs.getDefaultDomain() + ":name=htmlagent,port=" + agent.getPort()));
+			
+			agent.startServer();
 		} 
 		catch (InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException | MalformedObjectNameException e) {
 			e.printStackTrace();
-		}
-		
-		agent.startServer();
-		
-		try {
-			Thread.currentThread().sleep(2000);
-			mbs2.unregisterMBean(new ObjectName(mbs2.getDefaultDomain() + ":name=htmlagent,port=" + agent.getPort()));
-		} 
-		catch (InterruptedException e) {
-			e.printStackTrace();
-		} 
-		catch (MBeanRegistrationException e) {
-			e.printStackTrace();
-		} 
-		catch (InstanceNotFoundException e) {
-			e.printStackTrace();
-		} 
-		catch (MalformedObjectNameException e) {
-			e.printStackTrace();
-		}		
+		}	
 	}
 	
 }

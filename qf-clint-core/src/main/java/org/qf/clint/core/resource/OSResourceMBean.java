@@ -1,4 +1,4 @@
-package org.qf.clint.core.mbean;
+package org.qf.clint.core.resource;
 
 /**
  * <p>
