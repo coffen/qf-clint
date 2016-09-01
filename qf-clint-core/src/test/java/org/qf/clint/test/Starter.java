@@ -1,5 +1,16 @@
 package org.qf.clint.test;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
+
+import org.qf.clint.core.agent.HttpAgent;
+import org.qf.clint.core.server.http.SimpleHttpServer;
 import org.qf.clint.core.server.http.impl.JdkHttpServer;
 
 /**
@@ -23,10 +34,39 @@ import org.qf.clint.core.server.http.impl.JdkHttpServer;
 public class Starter {
 	
 	public static void main(String[] args) {
-		JdkHttpServer server = new JdkHttpServer();		
+		SimpleHttpServer server = new JdkHttpServer();	
 		server.bind(new TestAction());
+		HttpAgent agent = new HttpAgent(server);
 		
-		server.start();
+		MBeanServer mbs1 = MBeanServerFactory.createMBeanServer("A");
+		MBeanServer mbs2 = MBeanServerFactory.createMBeanServer("B");
+		
+		try {
+			mbs1.registerMBean(agent, new ObjectName(mbs1.getDefaultDomain() + ":name=htmlagent,port=" + agent.getPort()));
+			mbs2.registerMBean(agent, new ObjectName(mbs2.getDefaultDomain() + ":name=htmlagent,port=" + agent.getPort()));
+		} 
+		catch (InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException | MalformedObjectNameException e) {
+			e.printStackTrace();
+		}
+		
+		agent.startServer();
+		
+		try {
+			Thread.currentThread().sleep(2000);
+			mbs2.unregisterMBean(new ObjectName(mbs2.getDefaultDomain() + ":name=htmlagent,port=" + agent.getPort()));
+		} 
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		} 
+		catch (MBeanRegistrationException e) {
+			e.printStackTrace();
+		} 
+		catch (InstanceNotFoundException e) {
+			e.printStackTrace();
+		} 
+		catch (MalformedObjectNameException e) {
+			e.printStackTrace();
+		}		
 	}
 	
 }

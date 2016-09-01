@@ -147,12 +147,7 @@ public class JdkHttpServer implements SimpleHttpServer {
 		return "http";
 	}
 	
-	/**
-	 * 绑定控制器
-	 * 
-	 * @param action
-	 * @return
-	 */
+	@Override
 	public boolean bind(HttpAction action) {
 		if (isActive()) {
 			log.severe("*^* 服务已经在运行中, 不允许注册!");

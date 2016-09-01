@@ -1,6 +1,5 @@
 package org.qf.clint.test;
 
-import org.qf.clint.core.resource.OSResource;
 import org.qf.clint.core.server.http.HttpAction;
 import org.qf.clint.core.server.http.RequestPath;
 
@@ -26,11 +25,6 @@ public class TestAction implements HttpAction {
 	@RequestPath(url = "/")
 	public Object welcome() {
 		return "Hello, World!";
-	}
-	
-	@RequestPath(url = "/osResource")
-	public Object oSResource() {
-		return new OSResource();
 	}
 	
 }
