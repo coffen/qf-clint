@@ -36,7 +36,7 @@ public class Starter {
 	
 	public static void main(String[] args) {
 		SimpleHttpServer server = new JdkHttpServer();	
-		server.bind(new TestAction());
+		server.bind(new WelcomeAction());
 		HttpAgent agent = new HttpAgent(server);
 		
 		MBeanServer commonMbs = MBeanServerFactory.createMBeanServer("common");
@@ -46,7 +46,7 @@ public class Starter {
 			commonMbs.registerMBean(os, new ObjectName(commonMbs.getDefaultDomain() + ":type=OSResourceMBean"));
 			commonMbs.registerMBean(agent, new ObjectName(commonMbs.getDefaultDomain() + ":name=htmlagent,port=" + agent.getPort()));
 			
-			agent.startServer();
+			agent.startServer();			
 		} 
 		catch (InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException | MalformedObjectNameException e) {
 			e.printStackTrace();

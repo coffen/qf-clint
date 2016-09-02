@@ -20,7 +20,7 @@ import org.qf.clint.core.server.http.RequestPath;
  * @version: v1.0
  *
  */
-public class TestAction implements HttpAction {
+public class WelcomeAction implements HttpAction {
 	
 	@RequestPath(url = "/")
 	public Object welcome() {
