@@ -1,13 +1,13 @@
 package org.qf.clint.test;
 
-import org.qf.clint.core.server.http.HttpAction;
 import org.qf.clint.core.server.http.RequestPath;
+import org.qf.clint.core.server.http.impl.AbstractJMXAction;
 
 /**
  * <p>
  * Project Name: C2C商城
  * <br>
- * Description: 
+ * Description: 测试Action
  * <br>
  * File Name: TestAction.java
  * <br>
@@ -16,15 +16,15 @@ import org.qf.clint.core.server.http.RequestPath;
  * Company: 杭州偶尔科技有限公司
  * <br>
  * @author 穷奇
- * @create time：2016年8月23日 下午6:25:37 
+ * @create time：2016年9月2日 下午4:39:27 
  * @version: v1.0
  *
  */
-public class WelcomeAction implements HttpAction {
+public class TestAction extends AbstractJMXAction {
 	
-	@RequestPath(url = "/")
-	public Object welcome() {
-		return "Hello, World!";
+	@RequestPath(url = "/test")
+	public Object test() {
+		return getAgent();
 	}
 	
 }

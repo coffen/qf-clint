@@ -61,6 +61,14 @@ public interface SimpleHttpServer {
 	public String getProtocol();
 	
 	/**
+	 * 添加属性
+	 * 
+	 * @param name
+	 * @param obj
+	 */
+	public void addAttribute(String name, Object obj);
+	
+	/**
 	 * 绑定控制器
 	 */
 	public boolean bind(HttpAction action);

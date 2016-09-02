@@ -42,10 +42,10 @@ public class JdkHttpServer implements SimpleHttpServer {
 	private final static int STATUS_RUNNING = 2;
 	private final static int STATUS_STOP = 4;
 	
+	private final HttpServlet servlet = new DefaultHttpServlet();
+	
 	private HttpServer server;		// JDK Http服务器
-	
-	private HttpServlet servlet = new DefaultHttpServlet();
-	
+		
 	private int status = STATUS_READY;
 	
 	private int port = 9076;
@@ -145,6 +145,11 @@ public class JdkHttpServer implements SimpleHttpServer {
 	@Override
 	public String getProtocol() {
 		return "http";
+	}
+	
+	@Override
+	public void addAttribute(String name, Object obj) {
+		servlet.addAttribute(name, obj);		
 	}
 	
 	@Override

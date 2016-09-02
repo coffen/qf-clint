@@ -28,7 +28,6 @@ import javax.management.ReflectionException;
 import javax.management.RuntimeOperationsException;
 
 import org.qf.clint.core.server.http.SimpleHttpServer;
-import org.qf.clint.core.server.http.impl.JdkHttpServer;
 import org.qf.clint.core.util.StringUtil;
 
 /**
@@ -63,18 +62,20 @@ public class HttpAgent implements HttpAgentMBean, MBeanRegistration, Notificatio
 	
 	private MBeanServer currentMbs;
 
-	public HttpAgent(SimpleHttpServer server) {
+	public HttpAgent(SimpleHttpServer server) throws RuntimeOperationsException {
 		if (server == null) {
-			log.severe("SimpleHttpServer参数为空, 默认使用JdkHttpServer");
-			httpServer = new JdkHttpServer();
+			log.severe("SimpleHttpServer参数为空");
+			throw new RuntimeOperationsException(new IllegalArgumentException("SimpleHttpServer参数不能为空"), "创建Agent时参数错误");
 		}
-		else {
-			httpServer = server;
-		}
+		httpServer = server;
 	}
 
 	@Override
 	public void startServer() {
+		// 添加Agent到上下文环境
+		httpServer.addAttribute("_httpAgent", this);
+		
+		// 启动服务
 		httpServer.start();
 	}
 
@@ -195,7 +196,7 @@ public class HttpAgent implements HttpAgentMBean, MBeanRegistration, Notificatio
 		}
 		registerLock.lock();
 		
-		currentMbs = mbsMap.putIfAbsent(name.getCanonicalName(), server);
+		currentMbs = mbsMap.putIfAbsent(name.getDomain(), server);
 		if (currentMbs != null) {
 			registerLock.unlock();
 			throw new JMRuntimeException("Agent已注册MBeanServer: " + server.getDefaultDomain());
@@ -251,6 +252,10 @@ public class HttpAgent implements HttpAgentMBean, MBeanRegistration, Notificatio
 			MBeanServer removed = mbsMap.remove(deregistered);
 			log.info("Agent从MBeanServer注销: " + (removed == null ? "" : removed.getDefaultDomain()));
 		}		
+	}
+	
+	public MBeanServer getMBeanServer(String domain) {
+		return mbsMap.get(domain);
 	}
 
 }

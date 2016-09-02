@@ -15,6 +15,7 @@ import org.qf.clint.core.server.http.HttpResponse;
 import org.qf.clint.core.server.http.HttpResponseResolver;
 import org.qf.clint.core.server.http.HttpServlet;
 import org.qf.clint.core.server.http.RequestPath;
+import org.qf.clint.core.server.http.ServletContext;
 import org.qf.clint.core.util.StringUtil;
 
 /**
@@ -40,6 +41,8 @@ public class DefaultHttpServlet implements HttpServlet {
 	
 	private Map<String, RequestHandler> urlMapping = new HashMap<String, RequestHandler>();
 	
+	private ServletContext context;
+	
 	private HttpResponseResolver resolver;
 	
 	public DefaultHttpServlet() {
@@ -47,7 +50,8 @@ public class DefaultHttpServlet implements HttpServlet {
 	}
 	
 	public DefaultHttpServlet(HttpResponseResolver resolver) {
-		this.resolver = resolver == null ? new JsonResolver() : resolver;
+		this.resolver = resolver == null ? new JsonResolver() : resolver;		
+		this.context = new DefaultServletContext();
 	}
 	
 	@Override
@@ -61,14 +65,24 @@ public class DefaultHttpServlet implements HttpServlet {
 	}
 	
 	@Override
+	public void addAttribute(String name, Object obj) {
+		context.addAttribute(name, obj);		
+	}
+	
+	@Override
 	public boolean register(HttpAction action) {
 		if (action == null) {
 			log.severe("不合法的控制器");
 			return false;
 		}
+		buildContext(action);
 		parseAction(action);
 		
 		return true;
+	}
+	
+	private void buildContext(HttpAction action) {
+		action.setServletContext(context);
 	}
 	
 	private void parseAction(HttpAction action) {

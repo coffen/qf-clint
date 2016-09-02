@@ -31,6 +31,14 @@ public interface HttpServlet {
 	public void service(HttpRequest request, HttpResponse response) throws IOException, ActionException;
 	
 	/**
+	 * 添加属性
+	 * 
+	 * @param name
+	 * @param obj
+	 */
+	public void addAttribute(String name, Object obj);
+	
+	/**
 	 * 注册Http请求控制器
 	 * 
 	 * @param action

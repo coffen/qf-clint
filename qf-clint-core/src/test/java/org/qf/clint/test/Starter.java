@@ -12,6 +12,7 @@ import org.qf.clint.core.agent.HttpAgent;
 import org.qf.clint.core.resource.OSResource;
 import org.qf.clint.core.resource.OSResourceMBean;
 import org.qf.clint.core.server.http.SimpleHttpServer;
+import org.qf.clint.core.server.http.action.WelcomeAction;
 import org.qf.clint.core.server.http.impl.JdkHttpServer;
 
 /**
@@ -37,8 +38,9 @@ public class Starter {
 	public static void main(String[] args) {
 		SimpleHttpServer server = new JdkHttpServer();	
 		server.bind(new WelcomeAction());
-		HttpAgent agent = new HttpAgent(server);
+		server.bind(new TestAction());
 		
+		HttpAgent agent = new HttpAgent(server);		
 		MBeanServer commonMbs = MBeanServerFactory.createMBeanServer("common");
 		OSResourceMBean os = OSResource.getInstance();
 		
@@ -46,7 +48,7 @@ public class Starter {
 			commonMbs.registerMBean(os, new ObjectName(commonMbs.getDefaultDomain() + ":type=OSResourceMBean"));
 			commonMbs.registerMBean(agent, new ObjectName(commonMbs.getDefaultDomain() + ":name=htmlagent,port=" + agent.getPort()));
 			
-			agent.startServer();			
+			agent.startServer();
 		} 
 		catch (InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException | MalformedObjectNameException e) {
 			e.printStackTrace();

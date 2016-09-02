@@ -18,5 +18,12 @@ package org.qf.clint.core.server.http;
  *
  */
 public interface HttpAction {
+	
+	/**
+	 * 设置上下文环境
+	 * 
+	 * @param servletContext
+	 */
+	public void setServletContext(ServletContext servletContext);
 
 }
