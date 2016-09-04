@@ -70,6 +70,11 @@ public class DefaultHttpServlet implements HttpServlet {
 	}
 	
 	@Override
+	public Object getAttribute(String name) {
+		return context.getAttribute(name);
+	}
+	
+	@Override
 	public boolean register(HttpAction action) {
 		if (action == null) {
 			log.severe("不合法的控制器");

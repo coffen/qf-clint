@@ -12,6 +12,7 @@ import org.qf.clint.core.server.http.HttpResponse;
 import org.qf.clint.core.server.http.HttpServlet;
 import org.qf.clint.core.server.http.SimpleHttpServer;
 import org.qf.clint.core.util.HttpExchangeUtil;
+import org.qf.clint.core.util.StringUtil;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -38,6 +39,8 @@ public class JdkHttpServer implements SimpleHttpServer {
 	
 	private final Logger log = Logger.getLogger(getClass().getName());
 	
+	private final static String DEFAULT_CHAR_ENCODING = "UTF-8";
+	
 	private final static int STATUS_READY = 1;
 	private final static int STATUS_RUNNING = 2;
 	private final static int STATUS_STOP = 4;
@@ -47,6 +50,8 @@ public class JdkHttpServer implements SimpleHttpServer {
 	private HttpServer server;		// JDK Http服务器
 		
 	private int status = STATUS_READY;
+	
+	private String charEncoding = DEFAULT_CHAR_ENCODING;
 	
 	private int port = 9076;
 	
@@ -66,6 +71,7 @@ public class JdkHttpServer implements SimpleHttpServer {
 			lock.unlock();
 			return;
 		}
+		initServlet();
 		try {
 			server = HttpServer.create(new InetSocketAddress(port), maxProcess);
 			server.createContext("/", new SimpleHandler());
@@ -98,6 +104,10 @@ public class JdkHttpServer implements SimpleHttpServer {
 		}
 		lock.unlock();
 	}
+	
+	private void initServlet() {
+		servlet.addAttribute("_encoding", charEncoding);
+	}
 
 	@Override
 	public boolean isActive() {
@@ -123,8 +133,27 @@ public class JdkHttpServer implements SimpleHttpServer {
 		if (status != STATUS_READY) {
 			log.severe("*^* 服务已经在运行中或停止");
 		}
-		if (port >= 0 && port <= 65535) {
-			this.port = port;
+		else {
+			if (port >= 0 && port <= 65535) {
+				this.port = port;
+			}
+		}
+		lock.unlock();
+	}
+	
+	public String getCharEncoding() {
+		return charEncoding;
+	}
+	
+	public void setCharEncoding(String charEncoding) {
+		lock.lock();
+		if (status != STATUS_READY) {
+			log.severe("*^* 服务已经在运行中或停止");
+		}
+		else {
+			if (!(StringUtil.isBlank(charEncoding))) {
+				this.charEncoding = charEncoding;
+			}
 		}
 		lock.unlock();
 	}
@@ -138,7 +167,9 @@ public class JdkHttpServer implements SimpleHttpServer {
 		if (status != STATUS_READY) {
 			log.severe("*^* 服务已经在运行中或停止");
 		}
-		this.maxProcess = maxProcess < 10 ? 10 : maxProcess;
+		else {
+			this.maxProcess = maxProcess < 10 ? 10 : maxProcess;
+		}
 		lock.unlock();
 	}
 
@@ -168,8 +199,8 @@ public class JdkHttpServer implements SimpleHttpServer {
 
 		@Override
 		public void handle(HttpExchange exchange) throws IOException {
-			HttpRequest request = HttpExchangeUtil.buildHttpRequest(exchange);
-			HttpResponse response = HttpExchangeUtil.buildHttpResponse(exchange);
+			HttpRequest request = HttpExchangeUtil.buildHttpRequest(exchange, servlet);
+			HttpResponse response = HttpExchangeUtil.buildHttpResponse(exchange, servlet);
 			
 			try {
 				servlet.service(request, response);

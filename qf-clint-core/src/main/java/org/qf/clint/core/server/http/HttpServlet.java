@@ -39,6 +39,14 @@ public interface HttpServlet {
 	public void addAttribute(String name, Object obj);
 	
 	/**
+	 * 获取属性
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Object getAttribute(String name);
+	
+	/**
 	 * 注册Http请求控制器
 	 * 
 	 * @param action

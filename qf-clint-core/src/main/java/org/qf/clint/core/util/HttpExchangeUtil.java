@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import org.qf.clint.core.server.http.HttpRequest;
 import org.qf.clint.core.server.http.HttpRequestWrapper;
 import org.qf.clint.core.server.http.HttpResponse;
+import org.qf.clint.core.server.http.HttpServlet;
 import org.qf.clint.core.server.http.impl.SimpleHttpRequest;
 import org.qf.clint.core.server.http.impl.SimpleHttpResponse;
 
@@ -45,7 +46,7 @@ public class HttpExchangeUtil {
 	 * @param exchange
 	 * @return
 	 */
-	public static HttpRequest buildHttpRequest(HttpExchange exchange) {
+	public static HttpRequest buildHttpRequest(HttpExchange exchange, HttpServlet servlet) {
 		HttpRequest request = new SimpleHttpRequest();
 		HttpRequestWrapper wrapper = (HttpRequestWrapper)request;
 		if (exchange != null) {
@@ -169,8 +170,13 @@ public class HttpExchangeUtil {
 	 * @param exchange
 	 * @return
 	 */
-	public static HttpResponse buildHttpResponse(HttpExchange exchange) {
-		return new SimpleHttpResponse(exchange);
+	public static HttpResponse buildHttpResponse(HttpExchange exchange, HttpServlet servlet) {
+		SimpleHttpResponse response = new SimpleHttpResponse(exchange);
+		Object encoding = servlet.getAttribute("_encoding");
+		if (encoding != null) {
+			response.setCharEncoding(servlet.getAttribute("_encoding").toString());
+		}
+		return response;
 	}
 	
 	public static String parseCharEncoding(HttpExchange exchange) {

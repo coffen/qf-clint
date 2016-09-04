@@ -77,9 +77,9 @@ public class SimpleHttpResponse implements HttpResponse {
 
 	@Override
 	public void send(int status, String info) throws IOException {
-		exchange.sendResponseHeaders(status, info.length());	// 设置响应头属性及响应信息的长度  
-        OutputStream out = exchange.getResponseBody(); 			// 获得输出流  
-        out.write(info.getBytes());  
+		exchange.sendResponseHeaders(status, info.getBytes(charEncoding).length);	// 设置响应头属性及响应信息的长度  
+        OutputStream out = exchange.getResponseBody(); 					// 获得输出流  
+        out.write(info.getBytes(charEncoding));  
         out.flush();  
         exchange.close(); 
 	}

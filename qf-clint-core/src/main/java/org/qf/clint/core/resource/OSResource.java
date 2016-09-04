@@ -140,7 +140,7 @@ public class OSResource implements Resource, OSResourceMBean {
 		resource.name = osmxb.getName();
 		resource.version = osmxb.getVersion();
 		resource.arch = osmxb.getArch();
-		resource.availableProcessors = osmxb.getAvailableProcessors() / kb;
+		resource.availableProcessors = osmxb.getAvailableProcessors();
 		resource.systemLoadAverage = osmxb.getSystemLoadAverage();
 		resource.totalPhysicalMemorySize = osmxb.getTotalPhysicalMemorySize() / kb;
 		resource.freePhysicalMemorySize = osmxb.getFreePhysicalMemorySize() / kb;

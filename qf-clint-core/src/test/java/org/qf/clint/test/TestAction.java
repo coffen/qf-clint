@@ -1,6 +1,8 @@
 package org.qf.clint.test;
 
+import org.qf.clint.core.agent.HttpAgent;
 import org.qf.clint.core.server.http.RequestPath;
+import org.qf.clint.core.server.http.Result;
 import org.qf.clint.core.server.http.impl.AbstractJMXAction;
 
 /**
@@ -24,7 +26,7 @@ public class TestAction extends AbstractJMXAction {
 	
 	@RequestPath(url = "/test")
 	public Object test() {
-		return getAgent();
+		return new Result<HttpAgent>(200, getAgent());
 	}
 	
 }

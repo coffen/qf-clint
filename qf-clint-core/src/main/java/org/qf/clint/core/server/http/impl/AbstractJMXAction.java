@@ -2,6 +2,8 @@ package org.qf.clint.core.server.http.impl;
 
 import java.util.logging.Logger;
 
+import javax.management.MBeanServer;
+
 import org.qf.clint.core.agent.HttpAgent;
 import org.qf.clint.core.server.http.HttpAction;
 import org.qf.clint.core.server.http.ServletContext;
@@ -44,6 +46,15 @@ public abstract class AbstractJMXAction implements HttpAction {
 			return null;
 		}
 		return (HttpAgent)target;
+	}
+	
+	protected MBeanServer getMBeanServer(String domain) {
+		if (servletContext == null) {
+			log.severe("servletContext为空");
+			return null;
+		}
+		HttpAgent agent = getAgent();
+		return agent != null ? agent.getMBeanServer(domain) : null;
 	}
 	
 }

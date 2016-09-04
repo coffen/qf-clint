@@ -38,7 +38,7 @@ public class Starter {
 	public static void main(String[] args) {
 		SimpleHttpServer server = new JdkHttpServer();	
 		server.bind(new WelcomeAction());
-		server.bind(new TestAction());
+		server.bind(new CommonResourceAction());
 		
 		HttpAgent agent = new HttpAgent(server);		
 		MBeanServer commonMbs = MBeanServerFactory.createMBeanServer("common");
