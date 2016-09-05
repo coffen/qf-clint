@@ -9,9 +9,12 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
 import org.qf.clint.core.agent.HttpAgent;
+import org.qf.clint.core.resource.JarResource;
+import org.qf.clint.core.resource.JarResourceMBean;
 import org.qf.clint.core.resource.OSResource;
 import org.qf.clint.core.resource.OSResourceMBean;
 import org.qf.clint.core.server.http.SimpleHttpServer;
+import org.qf.clint.core.server.http.action.CommonResourceAction;
 import org.qf.clint.core.server.http.action.WelcomeAction;
 import org.qf.clint.core.server.http.impl.JdkHttpServer;
 
@@ -42,10 +45,12 @@ public class Starter {
 		
 		HttpAgent agent = new HttpAgent(server);		
 		MBeanServer commonMbs = MBeanServerFactory.createMBeanServer("common");
-		OSResourceMBean os = OSResource.getInstance();
+		OSResourceMBean os = new OSResource();
+		JarResourceMBean jar = new JarResource();
 		
 		try {
 			commonMbs.registerMBean(os, new ObjectName(commonMbs.getDefaultDomain() + ":type=OSResourceMBean"));
+			commonMbs.registerMBean(jar, new ObjectName(commonMbs.getDefaultDomain() + ":type=JarResourceMBean"));
 			commonMbs.registerMBean(agent, new ObjectName(commonMbs.getDefaultDomain() + ":name=htmlagent,port=" + agent.getPort()));
 			
 			agent.startServer();

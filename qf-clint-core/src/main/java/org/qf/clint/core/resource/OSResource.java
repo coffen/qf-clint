@@ -73,7 +73,35 @@ public class OSResource implements Resource, OSResourceMBean {
     // 网络使用率
     private Double netUsage;
     
-    private OSResource() {}
+    public OSResource() {
+		OperatingSystemMXBean osmxb = (OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
+		int kb = 1024;
+		// 构造数据
+		name = osmxb.getName();
+		version = osmxb.getVersion();
+		arch = osmxb.getArch();
+		availableProcessors = osmxb.getAvailableProcessors();
+		systemLoadAverage = osmxb.getSystemLoadAverage();
+		totalPhysicalMemorySize = osmxb.getTotalPhysicalMemorySize() / kb;
+		freePhysicalMemorySize = osmxb.getFreePhysicalMemorySize() / kb;
+		usedPhysicalMemorySize = (osmxb.getTotalPhysicalMemorySize() - osmxb.getFreePhysicalMemorySize()) / kb;
+		totalSwapMemorySize = osmxb.getTotalSwapSpaceSize() / kb;
+		freeSwapMemorySize = osmxb.getFreeSwapSpaceSize() / kb;
+		usedSwapMemorySize = (osmxb.getTotalSwapSpaceSize() - osmxb.getFreeSwapSpaceSize()) / kb;
+		String osName = name == null ? "" : name.toLowerCase();
+		if (osName.startsWith("windows")) {
+			// 测量CPU使用率
+			cpuRatio = getCpuRatioForWindows();
+        }
+		else if (osName.startsWith("linux")) {
+			// 测量CPU使用率
+			cpuRatio = getCpuRatioForLinux();
+			// 测量磁盘IO（Linux）
+			diskUsage = getDiskUsageForLinux();
+			// 测量网络占用率（Linux）
+			netUsage = getNetUsageForLinux();
+		}
+    }
 
 	public String getName() {
 		return name;
@@ -129,39 +157,6 @@ public class OSResource implements Resource, OSResourceMBean {
 	
 	public Double getNetUsage() {
 		return netUsage;
-	}
-	
-	public static OSResource getInstance() {
-		OSResource resource = new OSResource();
-		
-		OperatingSystemMXBean osmxb = (OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
-		int kb = 1024;
-		// 构造数据
-		resource.name = osmxb.getName();
-		resource.version = osmxb.getVersion();
-		resource.arch = osmxb.getArch();
-		resource.availableProcessors = osmxb.getAvailableProcessors();
-		resource.systemLoadAverage = osmxb.getSystemLoadAverage();
-		resource.totalPhysicalMemorySize = osmxb.getTotalPhysicalMemorySize() / kb;
-		resource.freePhysicalMemorySize = osmxb.getFreePhysicalMemorySize() / kb;
-		resource.usedPhysicalMemorySize = (osmxb.getTotalPhysicalMemorySize() - osmxb.getFreePhysicalMemorySize()) / kb;
-		resource.totalSwapMemorySize = osmxb.getTotalSwapSpaceSize() / kb;
-		resource.freeSwapMemorySize = osmxb.getFreeSwapSpaceSize() / kb;
-		resource.usedSwapMemorySize = (osmxb.getTotalSwapSpaceSize() - osmxb.getFreeSwapSpaceSize()) / kb;
-		String osName = resource.name == null ? "" : resource.name.toLowerCase();
-		if (osName.startsWith("windows")) {
-			// 测量CPU使用率
-			resource.cpuRatio = resource.getCpuRatioForWindows();
-        }
-		else if (osName.startsWith("linux")) {
-			// 测量CPU使用率
-			resource.cpuRatio = resource.getCpuRatioForLinux();
-			// 测量磁盘IO（Linux）
-			resource.diskUsage = resource.getDiskUsageForLinux();
-			// 测量网络占用率（Linux）
-			resource.netUsage = resource.getNetUsageForLinux();
-		}
-		return resource;
 	}
 	
 	/**
@@ -434,11 +429,6 @@ public class OSResource implements Resource, OSResourceMBean {
 			log.severe(sw.toString());
 		}
 		return netUsage;
-	}
-	
-	public static void main(String[] args) {
-		OSResource resource = OSResource.getInstance();
-		System.out.println(resource.getCpuRatio());
 	}
 	
 }
