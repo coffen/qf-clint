@@ -39,6 +39,14 @@ import org.qf.clint.core.server.http.impl.JdkHttpServer;
 public class Starter {
 	
 	public static void main(String[] args) {
+		new Starter();
+	}
+	
+	public Starter() {
+		init();
+	}
+	
+	private void init() {
 		SimpleHttpServer server = new JdkHttpServer();	
 		server.bind(new WelcomeAction());
 		server.bind(new CommonResourceAction());
@@ -57,7 +65,7 @@ public class Starter {
 		} 
 		catch (InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException | MalformedObjectNameException e) {
 			e.printStackTrace();
-		}	
+		}
 	}
 	
 }
